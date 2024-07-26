@@ -1,7 +1,9 @@
 # Underwriting-Assistant
 AI-Powered Insurance Recommendation Chatbot
 Project Overview
-This project involves the development of an advanced AI-powered chatbot designed to provide accurate and personalized insurance recommendations. The chatbot integrates data from over 20+ insurers' guides and uses the OpenAI API to generate real-time, fact-based responses. It leverages various technologies to ensure a robust, efficient, and user-friendly experience.
+
+This project involves the development of an advanced AI-powered chatbot designed to provide accurate and personalized insurance recommendations. 
+The chatbot integrates data from over 20+ insurers' guides and uses the OpenAI API to generate real-time, fact-based responses. It leverages various technologies to ensure a robust, efficient, and user-friendly experience.
 
 Key Features
 Personalized Recommendations: Provides tailored insurance advice based on user inputs.

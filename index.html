@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Chatbot</title>
+    <style>
+        body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #E6F3F7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    
+}
+
+.chat-container {
+    background-color: #FFFFFF;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;  /* Increased width for larger chat window */
+    width: 60%;  /* Use 90% of the viewport width */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.header {
+    text-align: center;
+    color: #0E817F;
+}
+
+.messages {
+    max-height: 600px;  /* Increased height for larger chat window */
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #F9FAFB;
+    flex-grow: 1;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: #0043A4 #f9f9f9;
+}
+
+.messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background-color: #0043A4;
+    border-radius: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    max-width: 80%;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.bot {
+    background-color: #F1F1F1;
+    align-self: flex-start;
+}
+
+.message.user {
+    background-color: #0E817F;
+    color: white;
+    align-self: flex-end;
+}
+
+.avatar {
+    position: absolute;
+    top: 10px;
+    left: -45px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-size: cover;
+}
+
+.message.user .avatar {
+    left: auto;
+    right: -45px;
+}
+
+.button-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.button-options button {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0E817F;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+.button-options button:hover {
+    background-color: #065A54;
+    transform: translateY(-2px);
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-container input,
+.input-container select {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    margin: 0 auto;
+    color: black;
+}
+
+.input-container button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0E817F;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+.input-container button:hover {
+    background-color: #065A54;
+    transform: translateY(-2px);
+}
+
+.tab-container {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #F9FAFB;
+}
+
+.tab-container.active {
+    display: flex;
+}
+
+.multi-select {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    
+}
+
+.multi-select label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    
+}
+
+.toggle-button {
+    background-color: #A0A0A0;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+}
+
+.toggle-button:hover {
+    background-color: #787878;
+    transform: translateY(-2px);
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0E817F;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    display: inline-block;
+}
+
+button:hover {
+    background-color: #065A54;
+    transform: translateY(-2px);
+}
+
+.additional-info {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.logout {
+    background-color: transparent;
+    border: none;
+    color: #0043A4;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.3s;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    align-self: flex-end;
+}
+
+.logout:hover {
+    color: #00296b;
+    transform: translateY(-2px);
+}
+
+
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <div class="button-options" id="button-options"></div>
+        <div class="input-container" id="input-container">
+            <input type="text" id="text" placeholder="Type your message">
+            <button onclick="sendMessage()">Send</button>
+            <button id="new-search-btn" onclick="startNewSearch()" style="display: none;">Start a New Search</button>
+        </div>
+        <div class="tab-container" id="multi-insurer-container">
+            <h3>Select 1 or more insurers:</h3>
+            <div class="multi-select" id="insurer">
+                <label><input type="checkbox" value="Canada Protection Plan"> Canada Protection Plan</label>
+                <label><input type="checkbox" value="RBC"> RBC</label>
+                <label><input type="checkbox" value="Orange Benefit Fund"> Orange Benefit Fund</label>
+                <label><input type="checkbox" value="Industrial Alliance"> Industrial Alliance</label>
+                <label><input type="checkbox" value="UV Insurance"> UV Insurance</label>
+                <label><input type="checkbox" value="Empire Life"> Empire Life</label>
+                <label><input type="checkbox" value="Assumption Life"> Assumption Life</label>
+                <label><input type="checkbox" value="BMO"> BMO</label>
+                <label><input type="checkbox" value="IVARI"> IVARI</label>
+                <label><input type="checkbox" value="Desjardins"> Desjardins</label>
+                <label><input type="checkbox" value="Foresters"> Foresters</label>
+                <label><input type="checkbox" value="Beneva"> Beneva</label>
+                <label><input type="checkbox" value="Specialty Life Insurance">Specialty Life Insurance</label>
+        
+            </div>
+            <button onclick="submitInsurers()">Submit Insurers</button>
+        </div>
+        <div class="tab-container" id="applicant-details-container">
+            <h3>Applicant Details</h3>
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="Enter your age" required>
+            <label for="gender">Gender</label>
+            <select   id="gender" required>
+                <option  value="">Select Gender</option>
+                <option class="more" color="black" value="Male">Male</option>
+                <option class="more" value="Female">Female</option>
+                <option class="more" value="Other">Other</option>
+            </select>
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" placeholder="Enter your height" required>
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" placeholder="Enter your weight" required>
+            <label for="smoking_status">Smoking Status</label>
+            <select id="smoking_status" required>
+                <option  value="">Smoking Status</option>
+                <option value="Non-Smoker">Non-Smoker</option>
+                <option value="Smoker">Smoker</option>
+                <option value="Former Smoker">Former Smoker</option>
+            </select>
+            <label for="health_conditions">Health Conditions</label>
+            <input type="text" id="health_conditions" placeholder="Enter health conditions" required>
+            <button class="toggle-button" onclick="toggleAdditionalInfo()">Add Additional Info</button>
+        
+            <button class="submit-applicant-details" onclick="submitApplicantData()">Submit Applicant Details</button>
+            <button class="find-insurer" onclick="findInsurer()">Find an Insurer</button>
+
+        </div>
+        <div class="tab-container" id="additional-info">
+            <label for="medications">Medications</label>
+            <input type="text" id="medications" placeholder="Enter your medications">
+            <label for="hospitalizations">Recent Hospitalizations or Surgeries</label>
+            <input type="text" id="hospitalizations" placeholder="Enter any recent hospitalizations or surgeries">
+            <label for="family_history">Family Medical History</label>
+            <input type="text" id="family_history" placeholder="Enter your family medical history">
+            <label for="occupation">Occupation</label>
+            <input type="text" id="occupation" placeholder="Enter your occupation">
+            <label for="other_details">Other Relevant Details</label>
+            <input type="text" id="other_details" placeholder="Enter any other relevant details">
+        </div>
+        <button class="logout" onclick="logout()">Restart Bot</button>
+    </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    addMessage("Welcome to Broker Bucks Underwriting Assistant. Click below to get started.", 'bot');
+    addButtons(['Select multiple insurers\' guide', 'Find an insurer']);
+});
+
+function addMessage(content, sender = 'bot') {
+    const messagesDiv = document.getElementById('messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+    messageDiv.classList.add(sender);
+    messageDiv.innerHTML = `<div class="avatar"></div><div class="message-content">${content.replace(/(?:\r\n|\r|\n)/g, '<br>')}</div>`;
+    
+    if (sender === 'user') {
+        messageDiv.querySelector('.avatar').style.backgroundImage = 'url(user-avatar.png)';
+    } else {
+        messageDiv.querySelector('.avatar').style.backgroundImage = 'url(bot-avatar.png)';
+    }
+    
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function addButtons(options) {
+    const buttonOptionsDiv = document.getElementById('button-options');
+    buttonOptionsDiv.innerHTML = '';
+    options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.onclick = () => handleButtonClick(option);
+        buttonOptionsDiv.appendChild(button);
+    });
+}
+
+function handleButtonClick(option) {
+    addMessage(option, 'user');
+    document.getElementById('button-options').innerHTML = '';
+    if (option === "Select multiple insurers' guide") {
+        showMultiSelect();
+    } else if (option === "Find an insurer") {
+        showApplicantDetails();
+    } else {
+        fetchResponse(option);
+    }
+}
+
+function showMultiSelect() {
+    document.getElementById('multi-insurer-container').classList.add('active');
+    document.querySelector('.toggle-button').style.display = 'block';
+    document.querySelector('button[onclick="submitInsurers()"]').style.display = 'block'; 
+    document.querySelector('button.find-insurer').style.display = 'none';
+}
+
+function showApplicantDetails() {
+    document.getElementById('applicant-details-container').classList.add('active');
+    document.querySelector('.toggle-button').style.display = 'block';
+    document.querySelector('button[onclick="submitApplicantData()"]').style.display = 'none';
+    document.querySelector('button.find-insurer').style.display = 'block';
+}
+
+function toggleAdditionalInfo() {
+    const additionalInfo = document.getElementById('additional-info');
+    const toggleButton = document.querySelector('.toggle-button');
+    if (additionalInfo.style.display === 'none' || additionalInfo.style.display === '') {
+        additionalInfo.style.display = 'flex';
+        toggleButton.textContent = 'Hide Additional Info';
+        toggleButton.style.backgroundColor = '#0E817F'; // Match the style of the submit applicant data button
+        toggleButton.style.color = '#fff';
+    } else {
+        additionalInfo.style.display = 'none';
+        toggleButton.textContent = 'Add Additional Info';
+        toggleButton.style.backgroundColor = '#0E817F'; // Match the style of the submit applicant data button
+        toggleButton.style.color = '#fff';
+    }
+}
+
+
+function submitInsurers() {
+    const insurers = Array.from(document.querySelectorAll('#insurer input:checked')).map(opt => opt.value);
+    if (insurers.length === 0) {
+        alert("Please select at least one insurer.");
+        return;
+    }
+
+    addMessage(`You have selected the following insurers: ${insurers.join(', ')}. Please provide the applicant details.`, 'bot');
+    document.getElementById('multi-insurer-container').classList.remove('active'); // Hide multi-select container
+    fetch('/select_insurer', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ insurers: insurers })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('applicant-details-container').classList.add('active');
+        } else {
+            addMessage(`Error: ${data.error}`, 'bot');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        addMessage('Error: Unable to select insurers.', 'bot');
+    });
+}
+
+function sendMessage() {
+    const input = document.getElementById('text');
+    const message = input.value;
+    if (message.trim() === '') return;
+    addMessage(message, 'user');
+    input.value = '';
+    fetchResponse(message);
+}
+
+function fetchResponse(prompt) {
+    fetch('/ask_question', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question: prompt })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addMessage(data.response, 'bot');
+            document.getElementById('new-search-btn').style.display = 'inline-block'; // Show the button
+        } else {
+            addMessage(`Error: ${data.error}`, 'bot');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        addMessage('Error: Unable to retrieve response.', 'bot');
+    });
+}
+
+
+
+function validateForm() {
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+    const height = document.getElementById('height').value;
+    const weight = document.getElementById('weight').value;
+    const smoking_status = document.getElementById('smoking_status').value;
+    const health_conditions = document.getElementById('health_conditions').value;
+
+    return age && gender && height && weight && smoking_status && health_conditions;
+}
+
+function submitApplicantData() {
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+    const height = document.getElementById('height').value;
+    const weight = document.getElementById('weight').value;
+    const smoking_status = document.getElementById('smoking_status').value;
+    const health_conditions = document.getElementById('health_conditions').value;
+    const medications = document.getElementById('medications').value;
+    const hospitalizations = document.getElementById('hospitalizations').value;
+    const family_history = document.getElementById('family_history').value;
+    const occupation = document.getElementById('occupation').value;
+    const other_details = document.getElementById('other_details').value;
+
+    if (!validateForm()) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    const applicantData = {
+        age: age,
+        gender: gender,
+        height: height,
+        weight: weight,
+        smoking_status: smoking_status,
+        health_conditions: health_conditions,
+        medications: medications,
+        hospitalizations: hospitalizations,
+        family_history: family_history,
+        occupation: occupation,
+        other_details: other_details
+    };
+
+    let providedInfo = 'You have provided the following information:\n';
+    providedInfo += 'Age: ' + age + '\n';
+    providedInfo += 'Gender: ' + gender + '\n';
+    providedInfo += 'Height: ' + height + ' cm\n';
+    providedInfo += 'Weight: ' + weight + ' kg\n';
+    providedInfo += 'Smoking Status: ' + smoking_status + '\n';
+    providedInfo += 'Health Conditions: ' + health_conditions + '\n';
+    if (medications) providedInfo += 'Medications: ' + medications + '\n';
+    if (hospitalizations) providedInfo += 'Hospitalizations: ' + hospitalizations + '\n';
+    if (family_history) providedInfo += 'Family History: ' + family_history + '\n';
+    if (occupation) providedInfo += 'Occupation: ' + occupation + '\n';
+    if (other_details) providedInfo += 'Other Details: ' + other_details;
+
+    addMessage(providedInfo, 'user');
+
+    fetch('/applicant_details', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(applicantData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addMessage('Underwriting results: ' + data.response, 'bot');
+            document.getElementById('new-search-btn').style.display = 'inline-block'; // Show the button
+        } else {
+            addMessage('Error processing applicant data.', 'bot');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        addMessage('Error processing applicant data.', 'bot');
+    });
+
+    document.getElementById('applicant-details-container').classList.remove('active');
+    document.getElementById('additional-info').style.display = 'none'; // Hide additional info section
+    document.getElementById('toggle-additional-info').style.display = 'none'; // Hide toggle button
+    document.querySelector('.toggle-button').style.display = 'none'; // Hide toggle button
+
+    document.querySelector('.find-insurer').style.display = 'inline-block'; // Show the find-insurer button
+}
+
+function findInsurer() {
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+    const height = document.getElementById('height').value;
+    const weight = document.getElementById('weight').value;
+    const smoking_status = document.getElementById('smoking_status').value;
+    const health_conditions = document.getElementById('health_conditions').value;
+    const medications = document.getElementById('medications').value;
+    const hospitalizations = document.getElementById('hospitalizations').value;
+    const family_history = document.getElementById('family_history').value;
+    const occupation = document.getElementById('occupation').value;
+    const other_details = document.getElementById('other_details').value;
+
+    if (!validateForm()) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    const applicantData = {
+        age: age,
+        gender: gender,
+        height: height,
+        weight: weight,
+        smoking_status: smoking_status,
+        health_conditions: health_conditions,
+        medications: medications,
+        hospitalizations: hospitalizations,
+        family_history: family_history,
+        occupation: occupation,
+        other_details: other_details
+    };
+
+    let providedInfo = 'You have provided the following information:\n';
+    providedInfo += 'Age: ' + age + '\n';
+    providedInfo += 'Gender: ' + gender + '\n';
+    providedInfo += 'Height: ' + height + ' cm\n';
+    providedInfo += 'Weight: ' + weight + ' kg\n';
+    providedInfo += 'Smoking Status: ' + smoking_status + '\n';
+    providedInfo += 'Health Conditions: ' + health_conditions + '\n';
+    if (medications) providedInfo += 'Medications: ' + medications + '\n';
+    if (hospitalizations) providedInfo += 'Hospitalizations: ' + hospitalizations + '\n';
+    if (family_history) providedInfo += 'Family History: ' + family_history + '\n';
+    if (occupation) providedInfo += 'Occupation: ' + occupation + '\n';
+    if (other_details) providedInfo += 'Other Details: ' + other_details;
+
+    addMessage(providedInfo, 'user');
+
+    fetch('/find_insurer', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(applicantData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            addMessage('Best insurer options: ' + data.response, 'bot');
+            document.getElementById('new-search-btn').style.display = 'inline-block'; // Show the button
+        } else {
+            addMessage('Error finding insurer.', 'bot');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        addMessage('Error finding insurer.', 'bot');
+    });
+
+    document.getElementById('applicant-details-container').classList.remove('active');
+    document.getElementById('additional-info').style.display = 'none'; // Hide additional info section
+    document.getElementById('toggle-additional-info').style.display = 'none'; // Hide toggle button
+    document.querySelector('.toggle-button').style.display = 'none'; // Hide toggle button
+
+    document.querySelector('.submit-applicant-details').style.display = 'none'; // Hide submit button
+}
+
+
+function startNewSearch() {
+    // Activate the insurer selection section and reset previous selections
+    document.getElementById('multi-insurer-container').classList.add('active');
+    const insurerInputs = document.querySelectorAll('#multi-insurer-container input[type="checkbox"]');
+    insurerInputs.forEach(input => input.checked = false);
+
+    // Hide the applicant details section and clear previous inputs
+    const applicantDetailsContainer = document.getElementById('applicant-details-container');
+    applicantDetailsContainer.classList.remove('active');
+    const applicantInputs = applicantDetailsContainer.querySelectorAll('input');
+    applicantInputs.forEach(input => input.value = '');
+
+    // Hide the additional info section and clear previous inputs
+    const additionalInfo = document.getElementById('additional-info');
+    additionalInfo.style.display = 'none';
+    const additionalInputs = additionalInfo.querySelectorAll('input');
+    additionalInputs.forEach(input => input.value = '');
+
+    // Hide the new search button
+    document.getElementById('new-search-btn').style.display = 'none';
+
+    // Add a message prompting the user to start a new search
+    addMessage("Please provide the details for a new search.", 'bot');
+}
+
+function logout() {
+    // Clear all user data and reset the UI
+    startNewSearch();
+    // Optionally redirect to the homepage or a login page
+    window.location.href = '/';  // Adjust the URL as needed
+}
+
+
+
+    </script>
+</body>
+</html>
